@@ -1,0 +1,89 @@
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 12px;
+}
+.new-patient {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+}
+
+.proc-pick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.proc-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  text-align: left;
+  transition: all 0.14s;
+}
+.proc-chip:hover {
+  border-color: var(--border-strong);
+}
+.proc-chip-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.proc-chip-meta {
+  font-size: 11.5px;
+  color: var(--text-mute);
+  font-weight: 600;
+}
+.proc-chip-add {
+  color: var(--primary);
+}
+
+.form-summary {
+  display: flex;
+  gap: 28px;
+  padding: 14px 16px;
+  background: var(--primary-tint);
+  border-radius: var(--radius);
+}
+.form-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.form-summary span {
+  font-size: 12px;
+}
+.form-summary strong {
+  font-size: 16px;
+}
+
+.form-error {
+  margin: 0;
+  color: var(--st-cancelado);
+  font-size: 13px;
+  font-weight: 600;
+  background: #fee2e2;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 560px) {
+  .form-row,
+  .proc-pick,
+  .new-patient {
+    grid-template-columns: 1fr;
+  }
+}

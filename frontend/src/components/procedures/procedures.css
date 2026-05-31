@@ -1,0 +1,97 @@
+.proc-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+.proc-card {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.proc-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 14px;
+}
+.proc-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-sm);
+}
+.proc-card-cat {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.proc-card-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.proc-card:hover .proc-card-actions {
+  opacity: 1;
+}
+.proc-card-body {
+  padding: 4px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.proc-card-body h3 {
+  font-size: 16.5px;
+}
+.proc-card-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  flex: 1;
+}
+.proc-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.proc-card-meta .muted {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.proc-card-meta strong {
+  font-size: 17px;
+}
+
+/* color picker (compartilhado pelo form) */
+.color-row {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.color-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.color-dot:hover {
+  transform: scale(1.12);
+}
+.color-dot.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--text);
+}

@@ -1,0 +1,19 @@
+# Dependências
+**/node_modules/
+
+# Build
+**/dist/
+**/dist-ssr/
+
+# Logs
+*.log
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
