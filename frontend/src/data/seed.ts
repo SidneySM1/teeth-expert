@@ -86,6 +86,10 @@ export const seedAppointments: Appointment[] = [
     start: isoAt(2, 10, 0),
     end: isoAt(2, 11, 40),
     status: 'confirmado',
+    // total 780 — pagamento parcial de 300 (status: parcial)
+    payments: [
+      { id: 'pay-seed-1', amount: 300, method: 'credito', date: isoAt(-1, 9, 0) },
+    ],
   },
   {
     id: 'apt-5',
@@ -94,5 +98,9 @@ export const seedAppointments: Appointment[] = [
     start: isoAt(-2, 16, 0),
     end: isoAt(-2, 16, 50),
     status: 'concluido',
+    // total 260 — quitado (status: pago)
+    payments: [
+      { id: 'pay-seed-2', amount: 260, method: 'pix', date: isoAt(-2, 16, 55) },
+    ],
   },
 ]

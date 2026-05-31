@@ -64,6 +64,26 @@ export interface AnamnesisAnswers {
   observacoes: string
 }
 
+// --------------------------- Pagamento ---------------------------
+export type PaymentMethod =
+  | 'dinheiro'
+  | 'pix'
+  | 'credito'
+  | 'debito'
+  | 'transferencia'
+
+/** Status derivado do total x valor pago (pode ser sobrescrito para "estornado"). */
+export type PaymentStatus = 'pendente' | 'parcial' | 'pago' | 'estornado'
+
+export interface Payment {
+  id: string
+  amount: number
+  method: PaymentMethod
+  /** data/hora do pagamento (ISO) */
+  date: string
+  note?: string
+}
+
 export interface Appointment {
   id: string
   patientId: string
@@ -78,6 +98,11 @@ export interface Appointment {
   anamnesis?: AnamnesisAnswers
   toothMarks?: ToothMark[]
   executionNotes?: string
+  // pagamento
+  discount?: number
+  payments?: Payment[]
+  /** sobrescreve o status derivado (ex.: "estornado") */
+  paymentStatusOverride?: PaymentStatus
 }
 
 // Tipos auxiliares de visão de calendário

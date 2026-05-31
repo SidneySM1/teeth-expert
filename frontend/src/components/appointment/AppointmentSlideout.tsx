@@ -8,6 +8,7 @@ import {
   Phone,
   Stethoscope,
   Trash2,
+  Wallet,
   X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -25,9 +26,12 @@ import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Odontogram } from '@/components/odontogram/Odontogram'
 import { Anamnesis } from './Anamnesis'
+import { PaymentPanel } from './PaymentPanel'
 import { Tip } from '@/components/ui/Tooltip'
 import { STATUS_META, currency, durationLabel, hhmm } from '@/lib/format'
+import { PAYMENT_STATUS_META, paymentSummary } from '@/lib/payments'
 import './slideout.css'
+import './payments.css'
 
 const STATUSES: AppointmentStatus[] = [
   'agendado',
@@ -43,7 +47,7 @@ interface Props {
   onEdit: (apt: Appointment) => void
 }
 
-type Tab = 'detalhes' | 'atendimento'
+type Tab = 'detalhes' | 'atendimento' | 'pagamento'
 
 export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
   const { patientById, procedureById, updateAppointment, removeAppointment } =
@@ -70,6 +74,7 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
     ? (apt.procedureIds.map(procedureById).filter(Boolean) as Procedure[])
     : []
   const total = procs.reduce((s, p) => s + p.price, 0)
+  const paySum = apt ? paymentSummary(apt, procs) : null
 
   function persist(extra?: Partial<Appointment>) {
     if (!apt) return
@@ -120,7 +125,21 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
             {/* Cabeçalho */}
             <header className="so-head">
               <div className="so-head-top">
-                <StatusBadge status={apt.status} />
+                <div className="row" style={{ gap: 8 }}>
+                  <StatusBadge status={apt.status} />
+                  {paySum && (
+                    <span
+                      className="badge"
+                      style={{
+                        color: PAYMENT_STATUS_META[paySum.status].color,
+                        background: PAYMENT_STATUS_META[paySum.status].bg,
+                      }}
+                    >
+                      <Wallet size={12} />
+                      {PAYMENT_STATUS_META[paySum.status].label}
+                    </span>
+                  )}
+                </div>
                 <div className="row" style={{ gap: 6 }}>
                   <Tip label="Editar consulta">
                     <button
@@ -185,19 +204,30 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
                 >
                   <Stethoscope size={16} /> Atendimento
                 </button>
+                <button
+                  className={tab === 'pagamento' ? 'so-tab active' : 'so-tab'}
+                  onClick={() => setTab('pagamento')}
+                >
+                  <Wallet size={16} /> Pagamento
+                </button>
               </div>
             </header>
 
             {/* Corpo */}
             <div className="so-body scroll-y">
-              {tab === 'detalhes' ? (
+              {tab === 'detalhes' && (
                 <DetailsTab
                   apt={apt}
                   procs={procs}
                   total={total}
+                  paymentStatus={paySum?.status}
                   onStatus={(s) => updateAppointment(apt.id, { status: s })}
                 />
-              ) : (
+              )}
+              {tab === 'pagamento' && (
+                <PaymentPanel apt={apt} procedures={procs} />
+              )}
+              {tab === 'atendimento' && (
                 <div className="exec">
                   <SectionTitle
                     icon={<ClipboardList size={16} />}
@@ -279,11 +309,13 @@ function DetailsTab({
   apt,
   procs,
   total,
+  paymentStatus,
   onStatus,
 }: {
   apt: Appointment
   procs: Procedure[]
   total: number
+  paymentStatus?: import('@/types').PaymentStatus
   onStatus: (s: AppointmentStatus) => void
 }) {
   return (
@@ -304,7 +336,20 @@ function DetailsTab({
         ))}
       </div>
       <div className="proc-total">
-        <span>Total</span>
+        <span className="row" style={{ gap: 8 }}>
+          Total
+          {paymentStatus && (
+            <span
+              className="badge"
+              style={{
+                color: PAYMENT_STATUS_META[paymentStatus].color,
+                background: PAYMENT_STATUS_META[paymentStatus].bg,
+              }}
+            >
+              {PAYMENT_STATUS_META[paymentStatus].label}
+            </span>
+          )}
+        </span>
         <strong>{currency(total)}</strong>
       </div>
 
