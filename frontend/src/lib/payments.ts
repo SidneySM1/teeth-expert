@@ -43,15 +43,15 @@ export interface PaymentSummary {
   status: PaymentStatus
 }
 
-/** Calcula o resumo financeiro de uma consulta. */
+/** Calcula o resumo financeiro de uma consulta.
+ *  O valor existe SOMENTE a partir dos itens realizados no atendimento —
+ *  antes disso não há orçamento, então o total é zero. */
 export function paymentSummary(
   apt: Appointment,
-  procedures: Procedure[],
+  _procedures: Procedure[],
 ): PaymentSummary {
-  const gross = apt.procedureIds.reduce(
-    (s, id) => s + (procedures.find((p) => p.id === id)?.price ?? 0),
-    0,
-  )
+  const items = apt.treatmentItems ?? []
+  const gross = items.reduce((s, it) => s + (it.price || 0), 0)
   const discount = Math.min(apt.discount ?? 0, gross)
   const total = Math.max(0, gross - discount)
   const paid = (apt.payments ?? []).reduce((s, p) => s + p.amount, 0)

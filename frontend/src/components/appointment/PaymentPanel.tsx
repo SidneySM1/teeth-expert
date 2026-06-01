@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Plus, RotateCcw, Trash2, Undo2, Wallet } from 'lucide-react'
+import { Mail, MessageCircle, Plus, RotateCcw, Trash2, Undo2, Wallet } from 'lucide-react'
 import { useState } from 'react'
 import type { Appointment, PaymentMethod, Procedure } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
@@ -14,6 +14,7 @@ import {
   PAYMENT_STATUS_META,
   paymentSummary,
 } from '@/lib/payments'
+import { buildSummaryText, mailtoUrl, whatsappUrl } from '@/lib/summary'
 
 export function PaymentPanel({
   apt,
@@ -22,8 +23,13 @@ export function PaymentPanel({
   apt: Appointment
   procedures: Procedure[]
 }) {
-  const { updateAppointment, addPayment, removePayment } = useClinic()
+  const { updateAppointment, addPayment, removePayment, patientById } = useClinic()
+  const patient = patientById(apt.patientId)
   const sum = paymentSummary(apt, procedures)
+  const summaryText = patient
+    ? buildSummaryText(patient, apt, procedures, sum)
+    : ''
+  const hasItems = (apt.treatmentItems?.length ?? 0) > 0
   const meta = PAYMENT_STATUS_META[sum.status]
   const pct = sum.total > 0 ? Math.min(100, (sum.paid / sum.total) * 100) : 0
 
@@ -210,6 +216,52 @@ export function PaymentPanel({
             </button>
           )
         )}
+      </div>
+
+      {/* Enviar resumo ao paciente */}
+      <div className="pay-send card">
+        <div className="pay-send-head">
+          <strong>Resumo do atendimento</strong>
+          <span className="muted">
+            {hasItems
+              ? 'Envie o resumo com o valor final ao paciente.'
+              : 'Registre os procedimentos realizados para gerar o resumo.'}
+          </span>
+        </div>
+        <div className="pay-send-actions">
+          <a
+            className={`btn pay-wa ${!patient ? 'is-disabled' : ''}`}
+            href={patient ? whatsappUrl(patient.phone, summaryText) : undefined}
+            target="_blank"
+            rel="noreferrer"
+            aria-disabled={!patient}
+          >
+            <MessageCircle size={16} /> WhatsApp
+          </a>
+          <Tip
+            label={
+              patient?.email
+                ? 'Abrir app de e-mail'
+                : 'Paciente sem e-mail cadastrado'
+            }
+          >
+            <a
+              className={`btn btn-ghost ${!patient?.email ? 'is-disabled' : ''}`}
+              href={
+                patient?.email
+                  ? mailtoUrl(
+                      patient.email,
+                      'Resumo do atendimento — Teeth Expert',
+                      summaryText,
+                    )
+                  : undefined
+              }
+              aria-disabled={!patient?.email}
+            >
+              <Mail size={16} /> E-mail
+            </a>
+          </Tip>
+        </div>
       </div>
     </div>
   )

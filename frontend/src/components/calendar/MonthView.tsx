@@ -12,6 +12,7 @@ import { motion } from 'framer-motion'
 import type { Appointment } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
 import { STATUS_META, hhmm } from '@/lib/format'
+import { AppointmentHoverCard } from './AppointmentHoverCard'
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
@@ -68,19 +69,20 @@ export function MonthView({
                   const m = STATUS_META[a.status]
                   const pat = patientById(a.patientId)
                   return (
-                    <motion.button
-                      key={a.id}
-                      className="cal-event"
-                      style={{ background: m.bg, color: m.color }}
-                      whileHover={{ x: 2 }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onSelect(a)
-                      }}
-                    >
-                      <span className="cal-event-time">{hhmm(a.start)}</span>
-                      <span className="cal-event-name">{pat?.name ?? '—'}</span>
-                    </motion.button>
+                    <AppointmentHoverCard key={a.id} appointment={a} side="right">
+                      <motion.button
+                        className="cal-event"
+                        style={{ background: m.bg, color: m.color }}
+                        whileHover={{ x: 2 }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onSelect(a)
+                        }}
+                      >
+                        <span className="cal-event-time">{hhmm(a.start)}</span>
+                        <span className="cal-event-name">{pat?.name ?? '—'}</span>
+                      </motion.button>
+                    </AppointmentHoverCard>
                   )
                 })}
                 {items.length > 3 && (

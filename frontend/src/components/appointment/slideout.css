@@ -36,6 +36,16 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  padding: 6px;
+  margin: -6px;
+  border-radius: var(--radius);
+  transition: background 0.15s;
+}
+.so-patient:hover {
+  background: var(--surface-2);
 }
 .so-patient h3 {
   font-size: 20px;
@@ -180,6 +190,12 @@
 .proc-total strong {
   font-size: 18px;
   color: var(--primary-600);
+}
+.proc-total-pending {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mute);
+  font-style: italic;
 }
 .note-box {
   margin: 0;

@@ -27,6 +27,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Odontogram } from '@/components/odontogram/Odontogram'
 import { Anamnesis } from './Anamnesis'
 import { PaymentPanel } from './PaymentPanel'
+import { TreatmentList } from './TreatmentList'
 import { Tip } from '@/components/ui/Tooltip'
 import { STATUS_META, currency, durationLabel, hhmm } from '@/lib/format'
 import { PAYMENT_STATUS_META, paymentSummary } from '@/lib/payments'
@@ -45,11 +46,17 @@ interface Props {
   appointment: Appointment | null
   onClose: () => void
   onEdit: (apt: Appointment) => void
+  onOpenPatient?: (patientId: string) => void
 }
 
 type Tab = 'detalhes' | 'atendimento' | 'pagamento'
 
-export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
+export function AppointmentSlideout({
+  appointment,
+  onClose,
+  onEdit,
+  onOpenPatient,
+}: Props) {
   const { patientById, procedureById, updateAppointment, removeAppointment } =
     useClinic()
   const [tab, setTab] = useState<Tab>('detalhes')
@@ -73,8 +80,8 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
   const procs: Procedure[] = apt
     ? (apt.procedureIds.map(procedureById).filter(Boolean) as Procedure[])
     : []
-  const total = procs.reduce((s, p) => s + p.price, 0)
   const paySum = apt ? paymentSummary(apt, procs) : null
+  const hasItems = (apt?.treatmentItems?.length ?? 0) > 0
 
   function persist(extra?: Partial<Appointment>) {
     if (!apt) return
@@ -168,7 +175,11 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
                 </div>
               </div>
 
-              <div className="so-patient">
+              <button
+                className="so-patient"
+                onClick={() => onOpenPatient?.(patient.id)}
+                title="Ver prontuário do paciente"
+              >
                 <Avatar name={patient.name} size={52} />
                 <div>
                   <h3>{patient.name}</h3>
@@ -178,7 +189,7 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
                     </span>
                   </div>
                 </div>
-              </div>
+              </button>
 
               <div className="so-when">
                 <span>
@@ -219,7 +230,8 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
                 <DetailsTab
                   apt={apt}
                   procs={procs}
-                  total={total}
+                  total={paySum?.total ?? 0}
+                  hasItems={hasItems}
                   paymentStatus={paySum?.status}
                   onStatus={(s) => updateAppointment(apt.id, { status: s })}
                 />
@@ -246,6 +258,13 @@ export function AppointmentSlideout({ appointment, onClose, onEdit }: Props) {
                     procedures={procs}
                     onChange={setMarks}
                   />
+
+                  <SectionTitle
+                    icon={<Wallet size={16} />}
+                    title="Procedimentos realizados"
+                    hint="Valores definidos aqui"
+                  />
+                  <TreatmentList apt={apt} procedures={procs} marks={marks} />
 
                   <SectionTitle
                     icon={<Pencil size={16} />}
@@ -309,18 +328,23 @@ function DetailsTab({
   apt,
   procs,
   total,
+  hasItems,
   paymentStatus,
   onStatus,
 }: {
   apt: Appointment
   procs: Procedure[]
   total: number
+  hasItems: boolean
   paymentStatus?: import('@/types').PaymentStatus
   onStatus: (s: AppointmentStatus) => void
 }) {
   return (
     <div className="details">
-      <SectionTitle icon={<ClipboardList size={16} />} title="Procedimentos" />
+      <SectionTitle
+        icon={<ClipboardList size={16} />}
+        title="Procedimentos previstos"
+      />
       <div className="proc-list">
         {procs.map((p) => (
           <div key={p.id} className="proc-item">
@@ -331,14 +355,13 @@ function DetailsTab({
                 {p.category} · {durationLabel(p.durationMin)}
               </span>
             </div>
-            <span className="proc-item-price">{currency(p.price)}</span>
           </div>
         ))}
       </div>
       <div className="proc-total">
         <span className="row" style={{ gap: 8 }}>
-          Total
-          {paymentStatus && (
+          {hasItems ? 'Total do atendimento' : 'Valor'}
+          {hasItems && paymentStatus && (
             <span
               className="badge"
               style={{
@@ -350,7 +373,11 @@ function DetailsTab({
             </span>
           )}
         </span>
-        <strong>{currency(total)}</strong>
+        {hasItems ? (
+          <strong>{currency(total)}</strong>
+        ) : (
+          <span className="proc-total-pending">definido no atendimento</span>
+        )}
       </div>
 
       {apt.notes && (

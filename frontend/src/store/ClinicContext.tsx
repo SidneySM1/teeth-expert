@@ -7,7 +7,13 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { Appointment, Patient, Payment, Procedure } from '@/types'
+import type {
+  Appointment,
+  Patient,
+  Payment,
+  Procedure,
+  TreatmentItem,
+} from '@/types'
 import { seedAppointments, seedPatients, seedProcedures } from '@/data/seed'
 import { load, save, uid } from './storage'
 
@@ -26,6 +32,14 @@ interface ClinicState {
   addAppointment: (data: Omit<Appointment, 'id'>) => Appointment
   updateAppointment: (id: string, patch: Partial<Appointment>) => void
   removeAppointment: (id: string) => void
+  // Itens realizados
+  addTreatmentItem: (appointmentId: string, data: Omit<TreatmentItem, 'id'>) => void
+  updateTreatmentItem: (
+    appointmentId: string,
+    itemId: string,
+    patch: Partial<TreatmentItem>,
+  ) => void
+  removeTreatmentItem: (appointmentId: string, itemId: string) => void
   // Pagamentos
   addPayment: (appointmentId: string, data: Omit<Payment, 'id'>) => void
   removePayment: (appointmentId: string, paymentId: string) => void
@@ -90,6 +104,56 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
     setAppointments((a) => a.filter((x) => x.id !== id))
   }, [])
 
+  const addTreatmentItem = useCallback(
+    (appointmentId: string, data: Omit<TreatmentItem, 'id'>) => {
+      const item: TreatmentItem = { ...data, id: uid('ti') }
+      setAppointments((a) =>
+        a.map((x) =>
+          x.id === appointmentId
+            ? { ...x, treatmentItems: [...(x.treatmentItems ?? []), item] }
+            : x,
+        ),
+      )
+    },
+    [],
+  )
+
+  const updateTreatmentItem = useCallback(
+    (appointmentId: string, itemId: string, patch: Partial<TreatmentItem>) => {
+      setAppointments((a) =>
+        a.map((x) =>
+          x.id === appointmentId
+            ? {
+                ...x,
+                treatmentItems: (x.treatmentItems ?? []).map((it) =>
+                  it.id === itemId ? { ...it, ...patch } : it,
+                ),
+              }
+            : x,
+        ),
+      )
+    },
+    [],
+  )
+
+  const removeTreatmentItem = useCallback(
+    (appointmentId: string, itemId: string) => {
+      setAppointments((a) =>
+        a.map((x) =>
+          x.id === appointmentId
+            ? {
+                ...x,
+                treatmentItems: (x.treatmentItems ?? []).filter(
+                  (it) => it.id !== itemId,
+                ),
+              }
+            : x,
+        ),
+      )
+    },
+    [],
+  )
+
   const addPayment = useCallback(
     (appointmentId: string, data: Omit<Payment, 'id'>) => {
       const payment: Payment = { ...data, id: uid('pay') }
@@ -144,6 +208,9 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
       addAppointment,
       updateAppointment,
       removeAppointment,
+      addTreatmentItem,
+      updateTreatmentItem,
+      removeTreatmentItem,
       addPayment,
       removePayment,
       patientById,
@@ -161,6 +228,9 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
       addAppointment,
       updateAppointment,
       removeAppointment,
+      addTreatmentItem,
+      updateTreatmentItem,
+      removeTreatmentItem,
       addPayment,
       removePayment,
       patientById,

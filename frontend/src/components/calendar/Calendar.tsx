@@ -9,6 +9,7 @@ import { MonthView } from './MonthView'
 import { TimeGridView } from './TimeGridView'
 import { AppointmentForm } from '@/components/appointment/AppointmentForm'
 import { AppointmentSlideout } from '@/components/appointment/AppointmentSlideout'
+import { PatientProfile } from '@/components/patient/PatientProfile'
 import { Tip } from '@/components/ui/Tooltip'
 import './calendar.css'
 
@@ -35,6 +36,7 @@ export function Calendar() {
   const [formOpen, setFormOpen] = useState(false)
   const [formDate, setFormDate] = useState<Date | undefined>()
   const [editing, setEditing] = useState<Appointment | undefined>()
+  const [profileId, setProfileId] = useState<string | null>(null)
 
   // mantém o slideout sincronizado com o store após edições
   const liveSelected = selected
@@ -146,6 +148,16 @@ export function Calendar() {
         onEdit={(apt) => {
           setSelected(null)
           openEdit(apt)
+        }}
+        onOpenPatient={(id) => setProfileId(id)}
+      />
+
+      <PatientProfile
+        patientId={profileId}
+        onClose={() => setProfileId(null)}
+        onOpenAppointment={(apt) => {
+          setProfileId(null)
+          setSelected(apt)
         }}
       />
     </div>

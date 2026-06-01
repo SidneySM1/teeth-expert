@@ -4,7 +4,7 @@ import type { Appointment, AppointmentStatus } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
 import { Modal } from '@/components/ui/Modal'
 import { Select } from '@/components/ui/Select'
-import { currency, durationLabel, pad2 } from '@/lib/format'
+import { durationLabel, pad2 } from '@/lib/format'
 import { STATUS_META } from '@/lib/format'
 
 interface Props {
@@ -41,6 +41,7 @@ export function AppointmentForm({ open, onClose, initialDate, editing }: Props) 
   const [newPatient, setNewPatient] = useState(false)
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+  const [newEmail, setNewEmail] = useState('')
   const [procIds, setProcIds] = useState<string[]>(editing?.procedureIds ?? [])
   const [date, setDate] = useState(toDateInput(base))
   const [time, setTime] = useState(toTimeInput(base))
@@ -58,15 +59,6 @@ export function AppointmentForm({ open, onClose, initialDate, editing }: Props) 
       ) || 30,
     [procIds, procedures],
   )
-  const totalPrice = useMemo(
-    () =>
-      procIds.reduce(
-        (s, id) => s + (procedures.find((p) => p.id === id)?.price ?? 0),
-        0,
-      ),
-    [procIds, procedures],
-  )
-
   function toggleProc(id: string) {
     setProcIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   }
@@ -76,7 +68,11 @@ export function AppointmentForm({ open, onClose, initialDate, editing }: Props) 
     let pid = patientId
     if (newPatient) {
       if (!newName.trim()) return setError('Informe o nome do paciente.')
-      pid = addPatient({ name: newName.trim(), phone: newPhone.trim() }).id
+      pid = addPatient({
+        name: newName.trim(),
+        phone: newPhone.trim(),
+        email: newEmail.trim() || undefined,
+      }).id
     }
     if (!pid) return setError('Selecione um paciente.')
     if (procIds.length === 0) return setError('Selecione ao menos um procedimento.')
@@ -149,7 +145,7 @@ export function AppointmentForm({ open, onClose, initialDate, editing }: Props) 
           ) : (
             <div className="new-patient">
               <input
-                className="input"
+                className="input np-name"
                 placeholder="Nome completo"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
@@ -161,8 +157,15 @@ export function AppointmentForm({ open, onClose, initialDate, editing }: Props) 
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
               />
+              <input
+                className="input"
+                type="email"
+                placeholder="E-mail (opcional)"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+              />
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost np-use"
                 type="button"
                 onClick={() => setNewPatient(false)}
               >
@@ -250,11 +253,11 @@ export function AppointmentForm({ open, onClose, initialDate, editing }: Props) 
             <span className="muted">Duração estimada</span>
             <strong>{durationLabel(totalMin)}</strong>
           </div>
-          <div>
-            <span className="muted">Valor total</span>
-            <strong style={{ color: 'var(--primary-600)' }}>
-              {currency(totalPrice)}
-            </strong>
+          <div className="form-summary-note">
+            <span className="muted">
+              Os valores são definidos no atendimento, ao registrar os
+              procedimentos realizados.
+            </span>
           </div>
         </div>
 

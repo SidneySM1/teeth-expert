@@ -6,6 +6,7 @@ export interface Patient {
   id: string
   name: string
   phone: string
+  email?: string
   birthDate?: string // ISO date
   notes?: string
 }
@@ -84,6 +85,17 @@ export interface Payment {
   note?: string
 }
 
+/** Item efetivamente realizado no atendimento (o valor é definido aqui). */
+export interface TreatmentItem {
+  id: string
+  procedureId: string
+  /** dente associado (FDI), opcional */
+  tooth?: number
+  /** preço cobrado — editável pelo dentista */
+  price: number
+  note?: string
+}
+
 export interface Appointment {
   id: string
   patientId: string
@@ -98,6 +110,8 @@ export interface Appointment {
   anamnesis?: AnamnesisAnswers
   toothMarks?: ToothMark[]
   executionNotes?: string
+  // itens realizados (definidos durante a execução)
+  treatmentItems?: TreatmentItem[]
   // pagamento
   discount?: number
   payments?: Payment[]

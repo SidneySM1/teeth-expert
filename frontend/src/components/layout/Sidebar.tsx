@@ -1,10 +1,11 @@
-import { CalendarDays, RotateCcw, Stethoscope } from 'lucide-react'
+import { CalendarDays, RotateCcw, Stethoscope, Users } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useClinic } from '@/store/ClinicContext'
 import './layout.css'
 
 const NAV = [
   { to: '/', label: 'Agenda', icon: CalendarDays, end: true },
+  { to: '/pacientes', label: 'Pacientes', icon: Users, end: false },
   { to: '/procedimentos', label: 'Procedimentos', icon: Stethoscope, end: false },
 ]
 

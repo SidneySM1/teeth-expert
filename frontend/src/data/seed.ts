@@ -40,10 +40,33 @@ export const seedProcedures: Procedure[] = [
 ]
 
 export const seedPatients: Patient[] = [
-  { id: 'pat-1', name: 'Mariana Lopes', phone: '(11) 98877-1234', birthDate: '1992-04-12' },
-  { id: 'pat-2', name: 'Rafael Andrade', phone: '(11) 99112-7788', birthDate: '1985-11-03' },
-  { id: 'pat-3', name: 'Beatriz Nunes', phone: '(21) 98123-4567', birthDate: '2000-07-21' },
-  { id: 'pat-4', name: 'Carlos Eduardo Pinto', phone: '(31) 99654-2211', birthDate: '1978-01-30' },
+  {
+    id: 'pat-1',
+    name: 'Mariana Lopes',
+    phone: '(11) 98877-1234',
+    email: 'mariana.lopes@email.com',
+    birthDate: '1992-04-12',
+  },
+  {
+    id: 'pat-2',
+    name: 'Rafael Andrade',
+    phone: '(11) 99112-7788',
+    email: 'rafael.andrade@email.com',
+    birthDate: '1985-11-03',
+  },
+  {
+    id: 'pat-3',
+    name: 'Beatriz Nunes',
+    phone: '(21) 98123-4567',
+    birthDate: '2000-07-21',
+  },
+  {
+    id: 'pat-4',
+    name: 'Carlos Eduardo Pinto',
+    phone: '(31) 99654-2211',
+    email: 'carlos.pinto@email.com',
+    birthDate: '1978-01-30',
+  },
 ]
 
 /** Gera consultas próximas à data atual para a demo não nascer vazia. */
@@ -87,6 +110,10 @@ export const seedAppointments: Appointment[] = [
     end: isoAt(2, 11, 40),
     status: 'confirmado',
     // total 780 — pagamento parcial de 300 (status: parcial)
+    treatmentItems: [
+      { id: 'ti-seed-1', procedureId: 'proc-clareamento', price: 600 },
+      { id: 'ti-seed-2', procedureId: 'proc-limpeza', price: 180 },
+    ],
     payments: [
       { id: 'pay-seed-1', amount: 300, method: 'credito', date: isoAt(-1, 9, 0) },
     ],
@@ -99,6 +126,19 @@ export const seedAppointments: Appointment[] = [
     end: isoAt(-2, 16, 50),
     status: 'concluido',
     // total 260 — quitado (status: pago)
+    treatmentItems: [
+      { id: 'ti-seed-3', procedureId: 'proc-restauracao', tooth: 26, price: 260 },
+    ],
+    toothMarks: [
+      {
+        tooth: 26,
+        condition: 'restaurado',
+        faces: ['oclusal'],
+        procedureId: 'proc-restauracao',
+        done: true,
+      },
+    ],
+    executionNotes: 'Restauração em resina na face oclusal do dente 26. Sem intercorrências.',
     payments: [
       { id: 'pay-seed-2', amount: 260, method: 'pix', date: isoAt(-2, 16, 55) },
     ],

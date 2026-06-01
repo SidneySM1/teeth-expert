@@ -10,8 +10,14 @@
 }
 .new-patient {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+.new-patient .np-name {
+  grid-column: 1 / -1;
+}
+.new-patient .np-use {
+  grid-column: 1 / -1;
 }
 
 .proc-pick {
@@ -68,6 +74,13 @@
 }
 .form-summary strong {
   font-size: 16px;
+}
+.form-summary-note {
+  flex: 1;
+}
+.form-summary-note span {
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .form-error {

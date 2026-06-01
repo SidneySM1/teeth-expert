@@ -13,6 +13,7 @@ import { useMemo } from 'react'
 import type { Appointment } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
 import { STATUS_META, hhmm } from '@/lib/format'
+import { AppointmentHoverCard } from './AppointmentHoverCard'
 
 const START_HOUR = 7
 const END_HOUR = 20
@@ -115,29 +116,34 @@ export function TimeGridView({
                 const m = STATUS_META[a.status]
                 const pat = patientById(a.patientId)
                 return (
-                  <motion.button
+                  <AppointmentHoverCard
                     key={a.id}
-                    className="cal-tevent"
-                    style={{
-                      top,
-                      height,
-                      background: m.bg,
-                      borderColor: m.color,
-                      color: m.color,
-                    }}
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    whileHover={{ scale: 1.02, zIndex: 5 }}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onSelect(a)
-                    }}
+                    appointment={a}
+                    side={mode === 'day' ? 'right' : 'top'}
                   >
-                    <span className="cal-tevent-time">
-                      {hhmm(a.start)}–{hhmm(a.end)}
-                    </span>
-                    <span className="cal-tevent-name">{pat?.name ?? '—'}</span>
-                  </motion.button>
+                    <motion.button
+                      className="cal-tevent"
+                      style={{
+                        top,
+                        height,
+                        background: m.bg,
+                        borderColor: m.color,
+                        color: m.color,
+                      }}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      whileHover={{ scale: 1.02, zIndex: 5 }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelect(a)
+                      }}
+                    >
+                      <span className="cal-tevent-time">
+                        {hhmm(a.start)}–{hhmm(a.end)}
+                      </span>
+                      <span className="cal-tevent-name">{pat?.name ?? '—'}</span>
+                    </motion.button>
+                  </AppointmentHoverCard>
                 )
               })}
             </div>
