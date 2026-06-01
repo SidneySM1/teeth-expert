@@ -8,8 +8,9 @@ import { useClinic } from '@/store/ClinicContext'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { PaymentBadge } from '@/components/ui/PaymentBadge'
 import { currency, hhmm } from '@/lib/format'
-import { PAYMENT_STATUS_META, paymentSummary } from '@/lib/payments'
+import { paymentSummary } from '@/lib/payments'
 import './hovercard.css'
 
 export function AppointmentHoverCard({
@@ -29,7 +30,6 @@ export function AppointmentHoverCard({
     .map(procedureById)
     .filter(Boolean) as NonNullable<ReturnType<typeof procedureById>>[]
   const sum = paymentSummary(appointment, procedures)
-  const pm = PAYMENT_STATUS_META[sum.status]
 
   if (!patient || noHover) return <>{children}</>
 
@@ -71,9 +71,7 @@ export function AppointmentHoverCard({
           <div className="hc-foot">
             <div className="hc-badges">
               <StatusBadge status={appointment.status} />
-              <span className="badge" style={{ color: pm.color, background: pm.bg }}>
-                {pm.label}
-              </span>
+              {sum.total > 0 && <PaymentBadge status={sum.status} />}
             </div>
             {sum.total > 0 && (
               <strong className="hc-total">{currency(sum.total)}</strong>

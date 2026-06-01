@@ -7,8 +7,10 @@ import { useClinic } from '@/store/ClinicContext'
 import { Modal } from '@/components/ui/Modal'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { PaymentBadge } from '@/components/ui/PaymentBadge'
+import { Tip } from '@/components/ui/Tooltip'
 import { currency, hhmm } from '@/lib/format'
-import { PAYMENT_STATUS_META, paymentSummary } from '@/lib/payments'
+import { paymentSummary } from '@/lib/payments'
 import { whatsappUrl } from '@/lib/summary'
 import './profile.css'
 
@@ -68,15 +70,16 @@ export function PatientProfile({
                 {age != null && <span className="profile-age">{age} anos</span>}
               </div>
             </div>
-            <a
-              className="btn btn-icon pay-wa profile-wa"
-              href={whatsappUrl(patient.phone, `Olá, ${patient.name.split(' ')[0]}!`)}
-              target="_blank"
-              rel="noreferrer"
-              title="WhatsApp"
-            >
-              <MessageCircle size={17} />
-            </a>
+            <Tip label="Enviar WhatsApp">
+              <a
+                className="btn btn-icon pay-wa profile-wa"
+                href={whatsappUrl(patient.phone, `Olá, ${patient.name.split(' ')[0]}!`)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <MessageCircle size={17} />
+              </a>
+            </Tip>
           </div>
 
           {/* Indicadores */}
@@ -118,7 +121,6 @@ export function PatientProfile({
             <div className="timeline">
               {history.map((a, i) => {
                 const sum = paymentSummary(a, procedures)
-                const pm = PAYMENT_STATUS_META[sum.status]
                 const items = a.treatmentItems ?? []
                 const teeth = (a.toothMarks ?? []).filter((m) => m.procedureId)
                 return (
@@ -146,12 +148,7 @@ export function PatientProfile({
                         </span>
                         <div className="tl-badges">
                           <StatusBadge status={a.status} />
-                          <span
-                            className="badge"
-                            style={{ color: pm.color, background: pm.bg }}
-                          >
-                            {pm.label}
-                          </span>
+                          {sum.total > 0 && <PaymentBadge status={sum.status} />}
                         </div>
                       </div>
 

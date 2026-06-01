@@ -7,6 +7,7 @@ import type { Appointment, PaymentMethod } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
 import { Select } from '@/components/ui/Select'
 import { Tip } from '@/components/ui/Tooltip'
+import { PaymentBadge } from '@/components/ui/PaymentBadge'
 import { currency } from '@/lib/format'
 import {
   PAYMENT_METHODS,
@@ -48,10 +49,7 @@ export function PaymentPanel({ apt }: { apt: Appointment }) {
       {/* Resumo */}
       <div className="pay-summary card">
         <div className="pay-summary-head">
-          <span className="badge" style={{ color: meta.color, background: meta.bg }}>
-            <span className="dot" style={{ background: meta.color }} />
-            {meta.label}
-          </span>
+          <PaymentBadge status={sum.status} />
           {sum.discount > 0 && (
             <span className="muted pay-discount-tag">
               desconto {currency(sum.discount)}

@@ -24,13 +24,14 @@ import type {
 import { useClinic } from '@/store/ClinicContext'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { PaymentBadge } from '@/components/ui/PaymentBadge'
 import { Odontogram } from '@/components/odontogram/Odontogram'
 import { Anamnesis } from './Anamnesis'
 import { PaymentPanel } from './PaymentPanel'
 import { TreatmentList } from './TreatmentList'
 import { Tip } from '@/components/ui/Tooltip'
 import { STATUS_META, currency, durationLabel, hhmm } from '@/lib/format'
-import { PAYMENT_STATUS_META, paymentSummary } from '@/lib/payments'
+import { paymentSummary } from '@/lib/payments'
 import './slideout.css'
 import './payments.css'
 
@@ -134,18 +135,7 @@ export function AppointmentSlideout({
               <div className="so-head-top">
                 <div className="row" style={{ gap: 8 }}>
                   <StatusBadge status={apt.status} />
-                  {paySum && (
-                    <span
-                      className="badge"
-                      style={{
-                        color: PAYMENT_STATUS_META[paySum.status].color,
-                        background: PAYMENT_STATUS_META[paySum.status].bg,
-                      }}
-                    >
-                      <Wallet size={12} />
-                      {PAYMENT_STATUS_META[paySum.status].label}
-                    </span>
-                  )}
+                  {paySum && hasItems && <PaymentBadge status={paySum.status} />}
                 </div>
                 <div className="row" style={{ gap: 6 }}>
                   <Tip label="Editar consulta">
@@ -175,21 +165,22 @@ export function AppointmentSlideout({
                 </div>
               </div>
 
-              <button
-                className="so-patient"
-                onClick={() => onOpenPatient?.(patient.id)}
-                title="Ver prontuário do paciente"
-              >
-                <Avatar name={patient.name} size={52} />
-                <div>
-                  <h3>{patient.name}</h3>
-                  <div className="so-meta">
-                    <span>
-                      <Phone size={13} /> {patient.phone}
-                    </span>
+              <Tip label="Ver prontuário do paciente">
+                <button
+                  className="so-patient"
+                  onClick={() => onOpenPatient?.(patient.id)}
+                >
+                  <Avatar name={patient.name} size={52} />
+                  <div>
+                    <h3>{patient.name}</h3>
+                    <div className="so-meta">
+                      <span>
+                        <Phone size={13} /> {patient.phone}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </button>
+                </button>
+              </Tip>
 
               <div className="so-when">
                 <span>
@@ -359,17 +350,7 @@ function DetailsTab({
       <div className="proc-total">
         <span className="row" style={{ gap: 8 }}>
           {hasItems ? 'Total do atendimento' : 'Valor'}
-          {hasItems && paymentStatus && (
-            <span
-              className="badge"
-              style={{
-                color: PAYMENT_STATUS_META[paymentStatus].color,
-                background: PAYMENT_STATUS_META[paymentStatus].bg,
-              }}
-            >
-              {PAYMENT_STATUS_META[paymentStatus].label}
-            </span>
-          )}
+          {hasItems && paymentStatus && <PaymentBadge status={paymentStatus} />}
         </span>
         {hasItems ? (
           <strong>{currency(total)}</strong>
