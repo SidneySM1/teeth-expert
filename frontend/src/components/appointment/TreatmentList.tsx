@@ -1,34 +1,34 @@
 import { motion } from 'framer-motion'
 import { Plus, Sparkles, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import type { Appointment, Procedure, ToothMark } from '@/types'
+import type { Appointment, ToothMark } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
 import { Select } from '@/components/ui/Select'
 import { Tip } from '@/components/ui/Tooltip'
 import { currency } from '@/lib/format'
+import { ALL_TEETH } from '@/lib/teeth'
 import './treatment.css'
 
 const NONE = '__none__'
 
 export function TreatmentList({
   apt,
-  procedures,
   marks,
 }: {
   apt: Appointment
-  procedures: Procedure[]
   marks: ToothMark[]
 }) {
-  const { addTreatmentItem, updateTreatmentItem, removeTreatmentItem } = useClinic()
+  // catálogo completo — durante o atendimento pode-se realizar qualquer
+  // procedimento, não só os agendados
+  const { procedures, addTreatmentItem, updateTreatmentItem, removeTreatmentItem } =
+    useClinic()
   const items = apt.treatmentItems ?? []
   const [procId, setProcId] = useState('')
   const [tooth, setTooth] = useState(NONE)
 
   const subtotal = items.reduce((s, it) => s + (it.price || 0), 0)
   const procOf = (id: string) => procedures.find((p) => p.id === id)
-
-  // dentes marcados disponíveis para vincular
-  const markedTeeth = marks.map((m) => m.tooth).sort((a, b) => a - b)
+  const markedSet = new Set(marks.map((m) => m.tooth))
 
   // sugestões do odontograma ainda não lançadas
   const pending = marks.filter(
@@ -45,8 +45,7 @@ export function TreatmentList({
       tooth: tooth === NONE ? undefined : Number(tooth),
       price: p?.price ?? 0,
     })
-    setProcId('')
-    setTooth(NONE)
+    // mantém o procedimento/dente para facilitar lançar vários itens em sequência
   }
 
   function importFromOdontogram() {
@@ -62,6 +61,13 @@ export function TreatmentList({
 
   return (
     <div className="tl">
+      {procedures.length === 0 && (
+        <p className="tl-warn">
+          Nenhum procedimento cadastrado. Cadastre em “Procedimentos” para lançar
+          aqui.
+        </p>
+      )}
+
       {pending.length > 0 && (
         <button className="tl-import" onClick={importFromOdontogram}>
           <Sparkles size={15} />
@@ -87,8 +93,10 @@ export function TreatmentList({
                 />
                 <div className="tl-item-main">
                   <strong>{p?.name ?? 'Procedimento'}</strong>
-                  {it.tooth != null && (
+                  {it.tooth != null ? (
                     <span className="tl-tooth">dente {it.tooth}</span>
+                  ) : (
+                    <span className="tl-tooth tl-tooth-none">geral</span>
                   )}
                 </div>
                 <div className="tl-price">
@@ -127,7 +135,7 @@ export function TreatmentList({
             value={procId}
             onChange={setProcId}
             ariaLabel="Procedimento"
-            placeholder="Adicionar procedimento…"
+            placeholder="Escolher procedimento…"
             options={procedures.map((p) => ({
               value: p.id,
               label: p.name,
@@ -141,14 +149,19 @@ export function TreatmentList({
             ariaLabel="Dente"
             options={[
               { value: NONE, label: 'Sem dente' },
-              ...markedTeeth.map((t) => ({
+              ...ALL_TEETH.map((t) => ({
                 value: String(t),
                 label: `Dente ${t}`,
+                hint: markedSet.has(t) ? '•' : undefined,
               })),
             ]}
           />
         </div>
-        <button className="btn btn-soft tl-add-btn" onClick={addItem} disabled={!procId}>
+        <button
+          className="btn btn-soft tl-add-btn"
+          onClick={addItem}
+          disabled={!procId}
+        >
           <Plus size={16} /> Adicionar
         </button>
       </div>

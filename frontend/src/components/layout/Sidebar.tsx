@@ -4,9 +4,15 @@ import { useClinic } from '@/store/ClinicContext'
 import './layout.css'
 
 const NAV = [
-  { to: '/', label: 'Agenda', icon: CalendarDays, end: true },
-  { to: '/pacientes', label: 'Pacientes', icon: Users, end: false },
-  { to: '/procedimentos', label: 'Procedimentos', icon: Stethoscope, end: false },
+  { to: '/', label: 'Agenda', icon: CalendarDays, end: true, hideMobile: false },
+  { to: '/pacientes', label: 'Pacientes', icon: Users, end: false, hideMobile: true },
+  {
+    to: '/procedimentos',
+    label: 'Procedimentos',
+    icon: Stethoscope,
+    end: false,
+    hideMobile: false,
+  },
 ]
 
 export function Sidebar() {
@@ -35,7 +41,11 @@ export function Sidebar() {
             key={n.to}
             to={n.to}
             end={n.end}
-            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item ${isActive ? 'active' : ''} ${
+                n.hideMobile ? 'nav-hide-mobile' : ''
+              }`
+            }
           >
             <n.icon size={19} />
             <span>{n.label}</span>

@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Mail, MessageCircle, Plus, RotateCcw, Trash2, Undo2, Wallet } from 'lucide-react'
 import { useState } from 'react'
-import type { Appointment, PaymentMethod, Procedure } from '@/types'
+import type { Appointment, PaymentMethod } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
 import { Select } from '@/components/ui/Select'
 import { Tip } from '@/components/ui/Tooltip'
@@ -16,14 +16,9 @@ import {
 } from '@/lib/payments'
 import { buildSummaryText, mailtoUrl, whatsappUrl } from '@/lib/summary'
 
-export function PaymentPanel({
-  apt,
-  procedures,
-}: {
-  apt: Appointment
-  procedures: Procedure[]
-}) {
-  const { updateAppointment, addPayment, removePayment, patientById } = useClinic()
+export function PaymentPanel({ apt }: { apt: Appointment }) {
+  const { updateAppointment, addPayment, removePayment, patientById, procedures } =
+    useClinic()
   const patient = patientById(apt.patientId)
   const sum = paymentSummary(apt, procedures)
   const summaryText = patient

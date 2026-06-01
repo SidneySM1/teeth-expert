@@ -168,6 +168,9 @@
     flex: 1;
     justify-content: space-around;
   }
+  .nav-hide-mobile {
+    display: none;
+  }
   .main-inner {
     padding: 16px 16px 76px;
   }

@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { Appointment } from '@/types'
 import { useClinic } from '@/store/ClinicContext'
+import { useMediaQuery } from '@/lib/useMediaQuery'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { currency, hhmm } from '@/lib/format'
@@ -21,6 +22,8 @@ export function AppointmentHoverCard({
   side?: 'top' | 'right' | 'bottom' | 'left'
 }) {
   const { patientById, procedureById, procedures } = useClinic()
+  // Em telas touch o hover card "trava" ao tocar — desativa e deixa o clique abrir o slideout.
+  const noHover = useMediaQuery('(hover: none), (pointer: coarse)')
   const patient = patientById(appointment.patientId)
   const procs = appointment.procedureIds
     .map(procedureById)
@@ -28,7 +31,7 @@ export function AppointmentHoverCard({
   const sum = paymentSummary(appointment, procedures)
   const pm = PAYMENT_STATUS_META[sum.status]
 
-  if (!patient) return <>{children}</>
+  if (!patient || noHover) return <>{children}</>
 
   return (
     <HC.Root openDelay={180} closeDelay={80}>

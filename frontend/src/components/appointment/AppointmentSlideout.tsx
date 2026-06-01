@@ -236,9 +236,7 @@ export function AppointmentSlideout({
                   onStatus={(s) => updateAppointment(apt.id, { status: s })}
                 />
               )}
-              {tab === 'pagamento' && (
-                <PaymentPanel apt={apt} procedures={procs} />
-              )}
+              {tab === 'pagamento' && <PaymentPanel apt={apt} />}
               {tab === 'atendimento' && (
                 <div className="exec">
                   <SectionTitle
@@ -264,7 +262,7 @@ export function AppointmentSlideout({
                     title="Procedimentos realizados"
                     hint="Valores definidos aqui"
                   />
-                  <TreatmentList apt={apt} procedures={procs} marks={marks} />
+                  <TreatmentList apt={apt} marks={marks} />
 
                   <SectionTitle
                     icon={<Pencil size={16} />}
